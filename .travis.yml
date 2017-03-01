@@ -1,0 +1,55 @@
+# Copyright (c) Microsoft. All rights reserved.
+# Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+language: generic
+branches:
+  only:
+    - master
+env:
+  global:
+    - IDE_VERSION=1.6.8
+  matrix:
+    - BOARD="esp8266:esp8266:huzzah:FlashSize=4M3M,CpuFrequency=80"
+before_install:
+  - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16
+  - sleep 3
+  - export DISPLAY=:1.0
+  - wget http://downloads.arduino.cc/arduino-$IDE_VERSION-linux64.tar.xz
+  - tar xf arduino-$IDE_VERSION-linux64.tar.xz
+  - mv arduino-$IDE_VERSION $HOME/arduino-ide
+  - export PATH=$PATH:$HOME/arduino-ide
+  - if [[ "$BOARD" =~ "arduino:samd:" ]]; then
+      arduino --install-boards arduino:samd;
+      arduino --install-library WiFi101;
+      arduino --install-library RTCZero;
+      arduino --install-library NTPClient;
+    fi
+  - if [[ "$BOARD" =~ "esp8266:esp8266:" ]]; then
+      arduino --pref "boardsmanager.additional.urls=http://arduino.esp8266.com/stable/package_esp8266com_index.json" --install-boards esp8266:esp8266;
+      arduino --pref "boardsmanager.additional.urls=" --save-prefs;
+      arduino --install-library NTPClient;
+      arduino --install-library NTPClient;
+    fi
+  - findAndReplace() { sed -i'' -e"s|$1|$2|g" "$3"; }
+  - buildExampleSketch() {
+      EXAMPLE_SKETCH=$PWD/$1/$1.ino;
+
+      if [[ "$BOARD" =~ "esp8266:esp8266:" ]]; then
+        findAndReplace WiFi101 ESP8266WiFi $EXAMPLE_SKETCH;
+        findAndReplace WiFiSSLClient WiFiClientSecure $EXAMPLE_SKETCH;
+        findAndReplace WiFiUdp WiFiUdp $EXAMPLE_SKETCH; 
+      fi
+      
+      arduino --verbose-build --verify --board $BOARD $EXAMPLE_SKETCH;
+    }
+install:
+  - arduino --install-library "AzureIoTUtility"
+  - arduino --install-library "AzureIoTHub"
+  - arduino --install-library "AzureIoTProtocol_HTTP"
+  - arduino --install-library "ArduinoJson"
+  - arduino --install-library "DHT sensor library"
+  # a slash bug in the arduino IoT lib
+  - sed -i -e 's/azure_c_shared_utility\\crt_abstractions.h/azure_c_shared_utility\/crt_abstractions.h/g' /home/travis/Arduino/libraries/AzureIoTHub/src/esp8266/azcpgmspace.h
+  - git clone https://github.com/adafruit/Adafruit_Sensor.git /home/travis/Arduino/libraries/Adafruit_Unified_Sensor
+script:
+  - buildExampleSketch app
