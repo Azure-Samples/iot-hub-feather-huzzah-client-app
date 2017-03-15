@@ -68,34 +68,3 @@ void readMessage(int messageId, char *payload)
     }
     root.printTo(payload, MESSAGE_MAX_LEN);
 }
-
-void executeCommand(char * json)
-{
-    StaticJsonBuffer<MESSAGE_MAX_LEN> jsonBuffer;
-    JsonObject& root = jsonBuffer.parseObject(json);
-    if (!root.success())
-    {
-        LogInfo("Parse command %s failed", json);
-        return;
-    }
-
-    if(!root.containsKey("command") || !root["command"].is<const char *>())
-    {
-        LogInfo("No command string value found in %s", json);
-        return;
-    }
-
-    const char * command = root["command"];
-    if(strcmp(command, "blink") == 0)
-    {
-        blinkLED();
-    }
-    else if(strcmp(command, "start") == 0)
-    {
-        messageSending = true;
-    }
-    else if(strcmp(command, "stop") == 0)
-    {
-        messageSending = false;
-    }
-}

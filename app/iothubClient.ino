@@ -1,5 +1,8 @@
 static WiFiClientSecure sslClient; // for ESP8266
 
+const char * onSuccess = "\"Successfully invoke device method\"";
+const char * notFound = "\"No method found\"";
+
 /*
  * The new version of AzureIoTHub library change the AzureIoTHubClient signature.
  * As a temporary solution, we will test the definition of AzureIoTHubVersion, which is only defined
@@ -58,6 +61,18 @@ static void sendMessage(IOTHUB_CLIENT_LL_HANDLE iotHubClientHandle, char *buffer
     }
 }
 
+void start()
+{
+    LogInfo("Start sending temperature and humidity data");
+    messageSending = true;
+}
+
+void stop()
+{
+    LogInfo("Stop sending temperature and humidity data");
+    messageSending = false; 
+}
+
 IOTHUBMESSAGE_DISPOSITION_RESULT receiveMessageCallback(IOTHUB_MESSAGE_HANDLE message, void* userContextCallback)
 {
     IOTHUBMESSAGE_DISPOSITION_RESULT result;
@@ -71,23 +86,36 @@ IOTHUBMESSAGE_DISPOSITION_RESULT receiveMessageCallback(IOTHUB_MESSAGE_HANDLE me
     else
     {
         /*buffer is not zero terminated*/
-        char* temp = (char*)malloc(size + 1);
-        if (temp == NULL)
-        {
-            LogInfo("Failed to malloc for command");
-            result = IOTHUBMESSAGE_REJECTED;
-        }
-        else
-        {
-           memcpy(temp, buffer, size);
-           temp[size] = '\0';
-           LogInfo("Receive message: %s", temp);
-
-           executeCommand(temp);
-
-            free(temp);
-            result = IOTHUBMESSAGE_ACCEPTED;
-        }
+        LogInfo("Receive C2D message: %s", buffer);
+        blinkLED();
     }
+    return IOTHUBMESSAGE_ACCEPTED;
+}
+
+int deviceMethodCallback(const char * methodName, const unsigned char * payload, size_t size, unsigned char ** response, size_t * response_size, void * userContextCallback)
+{
+    LogInfo("Try to invoke method %s", methodName);
+    const char * responseMessage = onSuccess;
+    int result = 200;
+    
+    if(strcmp(methodName, "start") == 0)
+    {
+        start();
+    }
+    else if(strcmp(methodName, "stop") == 0)
+    {
+        stop();
+    }
+    else
+    {
+        LogInfo("No method %s found", methodName);
+        responseMessage = notFound;
+        result = 404;
+    }
+
+    *response_size = strlen(responseMessage);
+    *response = (unsigned char *)malloc(*response_size);
+    strncpy((char *)(*response), responseMessage, *response_size);
+    
     return result;
 }

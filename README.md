@@ -16,9 +16,10 @@ Install the following libraries from `Sketch -> Include library -> Manage librar
 
 * AzureIoTHub
 * AzureIoTUtility
-* AzureIoTProtocol_HTTP
+* AzureIoTProtocol_MQTT
 * ArduinoJson
 * DHT sensor library
+* Adafruit Unified Sensor
 
 ## Connect your sensor with your board
 ### Connect with a physical DHT22 sensor
@@ -38,7 +39,7 @@ Upload the `app.ino` to your board.
 After you successfully upload the code to your board. You will see some prompt, input your credential information according to the prompts.
 
 ### Send Cloud-to-Device command
-You can send a json message to your device as one of the followings:
- * `{"command": "blink"}` - this will blink the LED on your board once.
- * `{"command": "start"}` - this will start to read temperature and humidity data from your DHT22 sensor or simulated data and send to your IoT hub.
- * `{"command": "stop"}`  - this will stop sending message to your IoT hub.
+You can send a C2D message to your device. You can see the device prints out the message and blinks once receiving the message.
+
+### Send Device Method command
+You can send `start` or `stop` device method command to your Pi to start/stop sending message to your IoT hub.

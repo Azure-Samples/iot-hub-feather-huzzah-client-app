@@ -45,11 +45,12 @@ before_install:
 install:
   - arduino --install-library "AzureIoTUtility"
   - arduino --install-library "AzureIoTHub"
-  - arduino --install-library "AzureIoTProtocol_HTTP"
+  - arduino --install-library "AzureIoTProtocol_MQTT"
   - arduino --install-library "ArduinoJson"
   - arduino --install-library "DHT sensor library"
+  - arduino --install-library "Adafruit Unified Sensor"
   # a slash bug in the arduino IoT lib
   - sed -i -e 's/azure_c_shared_utility\\crt_abstractions.h/azure_c_shared_utility\/crt_abstractions.h/g' /home/travis/Arduino/libraries/AzureIoTHub/src/esp8266/azcpgmspace.h
-  - git clone https://github.com/adafruit/Adafruit_Sensor.git /home/travis/Arduino/libraries/Adafruit_Unified_Sensor
+  - sed -i -e 's/azure_umqtt_c\\mqtt_client.h/azure_umqtt_c\/mqtt_client.h/g' /home/travis/Arduino/libraries/AzureIoTProtocol_MQTT/src/AzureIoTProtocol_MQTT.h
 script:
   - buildExampleSketch app

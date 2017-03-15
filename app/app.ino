@@ -8,7 +8,7 @@
 #include <WiFiUdp.h>
 
 #include <AzureIoTHub.h>
-#include <AzureIoTProtocol_HTTP.h>
+#include <AzureIoTProtocol_MQTT.h>
 
 #include "config.h"
 
@@ -84,7 +84,7 @@ void setup()
     initSensor();
     initIoThubClient();
 
-    iotHubClientHandle = IoTHubClient_LL_CreateFromConnectionString(connectionString, HTTP_Protocol);
+    iotHubClientHandle = IoTHubClient_LL_CreateFromConnectionString(connectionString, MQTT_Protocol);
     if (iotHubClientHandle == NULL)
     {
         LogInfo("Failed on IoTHubClient_CreateFromConnectionString");
@@ -103,6 +103,7 @@ void setup()
     }
 
     IoTHubClient_LL_SetMessageCallback(iotHubClientHandle, receiveMessageCallback, NULL);
+    IoTHubClient_LL_SetDeviceMethodCallback(iotHubClientHandle, deviceMethodCallback, NULL);
 }
 
 static int messageCount = 1;
