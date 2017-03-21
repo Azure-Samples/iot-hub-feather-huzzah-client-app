@@ -9,6 +9,7 @@
 
 #include <AzureIoTHub.h>
 #include <AzureIoTProtocol_MQTT.h>
+#include <AzureIoTUtility.h>
 
 #include "config.h"
 
@@ -91,17 +92,6 @@ void setup()
         while(1);
     }
 
-    // Because it can poll "after 2 seconds" polls will happen
-    // effectively at ~3 seconds.
-    // Note that for scalabilty, the default value of minimumPollingTime
-    // is 25 minutes. For more information, see:
-    // https://azure.microsoft.com/documentation/articles/iot-hub-devguide/#messaging
-    int minimumPollingTime = 2;
-    if (IoTHubClient_LL_SetOption(iotHubClientHandle, "MinimumPollingTime", &minimumPollingTime) != IOTHUB_CLIENT_OK)
-    {
-        LogInfo("failure to set option \"MinimumPollingTime\"\r\n");
-    }
-
     IoTHubClient_LL_SetMessageCallback(iotHubClientHandle, receiveMessageCallback, NULL);
     IoTHubClient_LL_SetDeviceMethodCallback(iotHubClientHandle, deviceMethodCallback, NULL);
 }
@@ -112,8 +102,8 @@ void loop()
     if(!messagePending && messageSending)
     {
         char messagePayload[MESSAGE_MAX_LEN];
-        readMessage(messageCount, messagePayload);
-        sendMessage(iotHubClientHandle, messagePayload);
+        bool temperatureAlert = readMessage(messageCount, messagePayload);
+        sendMessage(iotHubClientHandle, messagePayload, temperatureAlert);
         messageCount++;
     }
     IoTHubClient_LL_DoWork(iotHubClientHandle);

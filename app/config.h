@@ -6,6 +6,8 @@
 #define LED_PIN 0
 #define DHT_PIN 2
 
+#define TEMPERATURE_ALERT 30
+
 // Interval time(ms) for sending message to IoT Hub
 #define INTERVAL 2000
 
