@@ -105,7 +105,8 @@ void loop()
         bool temperatureAlert = readMessage(messageCount, messagePayload);
         sendMessage(iotHubClientHandle, messagePayload, temperatureAlert);
         messageCount++;
+        delay(INTERVAL);
     }
     IoTHubClient_LL_DoWork(iotHubClientHandle);
-    delay(INTERVAL);
+    delay(10);
 }

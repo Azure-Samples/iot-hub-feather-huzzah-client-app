@@ -88,7 +88,17 @@ IOTHUBMESSAGE_DISPOSITION_RESULT receiveMessageCallback(IOTHUB_MESSAGE_HANDLE me
     else
     {
         /*buffer is not zero terminated*/
-        LogInfo("Receive C2D message: %s", buffer);
+        char *temp = (char *)malloc(size + 1);
+
+        if (temp == NULL)
+        {
+            return IOTHUBMESSAGE_ABANDONED;
+        }
+    
+        strncpy(temp, (const char *)buffer, size);
+        temp[size] = '\0';
+        LogInfo("Receive C2D message: %s", temp);
+        free(temp);
         blinkLED();
     }
     return IOTHUBMESSAGE_ACCEPTED;
