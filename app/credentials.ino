@@ -10,14 +10,14 @@ void readCredentials()
     // malloc for parameters
     ssid = (char *)malloc(SSID_LEN);
     pass = (char *)malloc(PASS_LEN);
-    connectionString =(char *)malloc(CONNECTION_STRING_LEN);
+    connectionString = (char *)malloc(CONNECTION_STRING_LEN);
 
     // try to read out the credential information, if failed, the length should be 0.
     int ssidLength = EEPROMread(ssidAddr, ssid);
     int passLength = EEPROMread(passAddr, pass);
     int connectionStringLength = EEPROMread(connectionStringAddr, connectionString);
 
-    if(ssidLength > 0 && passLength > 0 && connectionStringLength > 0 && !needEraseEEPROM())
+    if (ssidLength > 0 && passLength > 0 && connectionStringLength > 0 && !needEraseEEPROM())
     {
         return;
     }
@@ -37,7 +37,7 @@ bool needEraseEEPROM()
 {
     char result = 'n';
     readFromSerial("Do you need re-input your credential information?(Auto skip this after 5 seconds)[Y/n]", &result, 1, 5000);
-    if(result == 'Y' || result == 'y')
+    if (result == 'Y' || result == 'y')
     {
         clearParam();
         return true;
@@ -55,13 +55,13 @@ void clearParam()
 
 #define EEPROM_END 0
 #define EEPROM_START 1
-void EEPROMWrite(int addr, char * data, int size)
+void EEPROMWrite(int addr, char *data, int size)
 {
     EEPROM.begin(EEPROM_SIZE);
     // write the start marker
     EEPROM.write(addr, EEPROM_START);
     addr++;
-    for(int i = 0; i < size; i++)
+    for (int i = 0; i < size; i++)
     {
         EEPROM.write(addr, data[i]);
         addr++;
@@ -73,17 +73,17 @@ void EEPROMWrite(int addr, char * data, int size)
 
 // read bytes from addr util '\0'
 // return the length of read out.
-int EEPROMread(int addr, char * buf)
+int EEPROMread(int addr, char *buf)
 {
     EEPROM.begin(EEPROM_SIZE);
     int count = -1;
     char c = EEPROM.read(addr);
     addr++;
-    if(c != EEPROM_START)
+    if (c != EEPROM_START)
     {
         return 0;
     }
-    while(c != EEPROM_END && count < EEPROM_SIZE)
+    while (c != EEPROM_END && count < EEPROM_SIZE)
     {
         c = (char)EEPROM.read(addr);
         count++;

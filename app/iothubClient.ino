@@ -1,7 +1,7 @@
 static WiFiClientSecure sslClient; // for ESP8266
 
-const char * onSuccess = "\"Successfully invoke device method\"";
-const char * notFound = "\"No method found\"";
+const char *onSuccess = "\"Successfully invoke device method\"";
+const char *notFound = "\"No method found\"";
 
 /*
  * The new version of AzureIoTHub library change the AzureIoTHubClient signature.
@@ -23,7 +23,7 @@ void initIoThubClient()
 }
 #endif
 
-static void sendCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* userContextCallback)
+static void sendCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void *userContextCallback)
 {
     if (IOTHUB_CLIENT_CONFIRMATION_OK == result)
     {
@@ -39,7 +39,7 @@ static void sendCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* userCon
 
 static void sendMessage(IOTHUB_CLIENT_LL_HANDLE iotHubClientHandle, char *buffer, bool temperatureAlert)
 {
-    IOTHUB_MESSAGE_HANDLE messageHandle = IoTHubMessage_CreateFromByteArray((const unsigned char*)buffer, strlen(buffer));
+    IOTHUB_MESSAGE_HANDLE messageHandle = IoTHubMessage_CreateFromByteArray((const unsigned char *)buffer, strlen(buffer));
     if (messageHandle == NULL)
     {
         LogInfo("unable to create a new IoTHubMessage");
@@ -72,13 +72,13 @@ void start()
 void stop()
 {
     LogInfo("Stop sending temperature and humidity data");
-    messageSending = false; 
+    messageSending = false;
 }
 
-IOTHUBMESSAGE_DISPOSITION_RESULT receiveMessageCallback(IOTHUB_MESSAGE_HANDLE message, void* userContextCallback)
+IOTHUBMESSAGE_DISPOSITION_RESULT receiveMessageCallback(IOTHUB_MESSAGE_HANDLE message, void *userContextCallback)
 {
     IOTHUBMESSAGE_DISPOSITION_RESULT result;
-    const unsigned char* buffer;
+    const unsigned char *buffer;
     size_t size;
     if (IoTHubMessage_GetByteArray(message, &buffer, &size) != IOTHUB_MESSAGE_OK)
     {
@@ -94,7 +94,7 @@ IOTHUBMESSAGE_DISPOSITION_RESULT receiveMessageCallback(IOTHUB_MESSAGE_HANDLE me
         {
             return IOTHUBMESSAGE_ABANDONED;
         }
-    
+
         strncpy(temp, (const char *)buffer, size);
         temp[size] = '\0';
         LogInfo("Receive C2D message: %s", temp);
@@ -104,17 +104,23 @@ IOTHUBMESSAGE_DISPOSITION_RESULT receiveMessageCallback(IOTHUB_MESSAGE_HANDLE me
     return IOTHUBMESSAGE_ACCEPTED;
 }
 
-int deviceMethodCallback(const char * methodName, const unsigned char * payload, size_t size, unsigned char ** response, size_t * response_size, void * userContextCallback)
+int deviceMethodCallback(
+    const char *methodName,
+    const unsigned char *payload,
+    size_t size,
+    unsigned char **response,
+    size_t *response_size,
+    void *userContextCallback)
 {
     LogInfo("Try to invoke method %s", methodName);
-    const char * responseMessage = onSuccess;
+    const char *responseMessage = onSuccess;
     int result = 200;
-    
-    if(strcmp(methodName, "start") == 0)
+
+    if (strcmp(methodName, "start") == 0)
     {
         start();
     }
-    else if(strcmp(methodName, "stop") == 0)
+    else if (strcmp(methodName, "stop") == 0)
     {
         stop();
     }
@@ -128,6 +134,22 @@ int deviceMethodCallback(const char * methodName, const unsigned char * payload,
     *response_size = strlen(responseMessage);
     *response = (unsigned char *)malloc(*response_size);
     strncpy((char *)(*response), responseMessage, *response_size);
-    
+
     return result;
+}
+
+void twinCallback(
+    DEVICE_TWIN_UPDATE_STATE updateState,
+    const unsigned char *payLoad,
+    size_t size,
+    void *userContextCallback)
+{
+    char *temp = (char *)malloc(size + 1);
+    for (int i = 0; i < size; i++)
+    {
+        temp[i] = (char)(payLoad[i]);
+    }
+    temp[size] = '\0';
+    parseTwinMessage(temp);
+    free(temp);
 }

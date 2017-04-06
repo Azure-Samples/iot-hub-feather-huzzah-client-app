@@ -7,7 +7,7 @@ branches:
     - master
 env:
   global:
-    - IDE_VERSION=1.6.8
+    - IDE_VERSION=1.8.1
   matrix:
     - BOARD="esp8266:esp8266:huzzah:FlashSize=4M3M,CpuFrequency=80"
 before_install:

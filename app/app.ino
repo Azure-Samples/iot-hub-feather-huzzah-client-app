@@ -16,9 +16,11 @@
 static bool messagePending = false;
 static bool messageSending = true;
 
-static char * connectionString;
-static char * ssid;
-static char * pass;
+static char *connectionString;
+static char *ssid;
+static char *pass;
+
+static int interval = INTERVAL;
 
 void blinkLED()
 {
@@ -42,7 +44,7 @@ void initWifi()
         uint8_t mac[6];
         WiFi.macAddress(mac);
         LogInfo("You device with MAC address %02x:%02x:%02x:%02x:%02x:%02x connects to %s failed! Waiting 10 seconds to retry.",
-            mac[0], mac[1], mac[2], mac[3], mac[4], mac[5], ssid);
+                mac[0], mac[1], mac[2], mac[3], mac[4], mac[5], ssid);
         WiFi.begin(ssid, pass);
         delay(10000);
     }
@@ -67,7 +69,7 @@ void initTime()
         {
             LogInfo("Fetched NTP epoch time is: %lu", epochTime);
             break;
-       }
+        }
     }
 }
 
@@ -89,23 +91,24 @@ void setup()
     if (iotHubClientHandle == NULL)
     {
         LogInfo("Failed on IoTHubClient_CreateFromConnectionString");
-        while(1);
+        while (1);
     }
 
     IoTHubClient_LL_SetMessageCallback(iotHubClientHandle, receiveMessageCallback, NULL);
     IoTHubClient_LL_SetDeviceMethodCallback(iotHubClientHandle, deviceMethodCallback, NULL);
+    IoTHubClient_LL_SetDeviceTwinCallback(iotHubClientHandle, twinCallback, NULL);
 }
 
 static int messageCount = 1;
 void loop()
 {
-    if(!messagePending && messageSending)
+    if (!messagePending && messageSending)
     {
         char messagePayload[MESSAGE_MAX_LEN];
         bool temperatureAlert = readMessage(messageCount, messagePayload);
         sendMessage(iotHubClientHandle, messagePayload, temperatureAlert);
         messageCount++;
-        delay(INTERVAL);
+        delay(interval);
     }
     IoTHubClient_LL_DoWork(iotHubClientHandle);
     delay(10);
