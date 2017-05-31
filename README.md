@@ -45,4 +45,4 @@ After you successfully upload the code to your board. You will see some prompt, 
 You can send a C2D message to your device. You can see the device prints out the message and blinks once receiving the message.
 
 ### Send Device Method command
-You can send `start` or `stop` device method command to your Pi to start/stop sending message to your IoT hub.
+You can send `start` or `stop` device method command to your feather HUZZAH ESP8266 to start/stop sending message to your IoT hub.
