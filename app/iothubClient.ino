@@ -14,20 +14,20 @@ const char *notFound = "\"No method found\"";
 */
 
 /*
-#ifdef AzureIoTHubVersion
-static AzureIoTHubClient iotHubClient;
-void initIoThubClient()
-{
-    iotHubClient.begin(sslClient);
-}
-#else
-static AzureIoTHubClient iotHubClient(sslClient);
-void initIoThubClient()
-{
-    iotHubClient.begin();
-}
-#endif
-*/
+ * #ifdef AzureIoTHubVersion
+ * static AzureIoTHubClient iotHubClient;
+ * void initIoThubClient()
+ * {
+ *     iotHubClient.begin(sslClient);
+ * }
+ * #else
+ * static AzureIoTHubClient iotHubClient(sslClient);
+ * void initIoThubClient()
+ * {
+ *     iotHubClient.begin();
+ * }
+ * #endif
+ */
 
 static void sendCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void *userContextCallback)
 {
