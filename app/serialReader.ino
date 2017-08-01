@@ -3,7 +3,7 @@ void initSerial()
     // Start serial and initialize stdout
     Serial.begin(115200);
     Serial.setDebugOutput(true);
-    LogInfo("Serial successfully inited");
+    Serial.println("Serial successfully inited");
 }
 
 /* Read a string whose length should in (0, lengthLimit) from Serial and save it into buf.
@@ -31,7 +31,7 @@ bool readFromSerial(char * prompt, char * buf, int maxLen, int timeout)
         int len = input.length();
         if(len > maxLen)
         {
-            LogInfo("Your input should less than %d character(s), now you input %d characters\n", maxLen, len);
+            Serial.printf("Your input should less than %d character(s), now you input %d characters\n", maxLen, len);
         }
         else if (len > 0)
         {
@@ -44,7 +44,7 @@ bool readFromSerial(char * prompt, char * buf, int maxLen, int timeout)
         timer += delayTime;
         if(timeout > 0 && timer >= timeout)
         {
-            LogInfo("You input nothing, skip...");
+            Serial.println("You input nothing, skip...");
             return false;
         }
         // delay a time before next read
