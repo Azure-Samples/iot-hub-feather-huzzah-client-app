@@ -32,7 +32,7 @@ void blinkLED()
 void initWifi()
 {
     // Attempt to connect to Wifi network:
-    Serial.printf("Attempting to connect to SSID: %s\r\n", ssid);
+    Serial.printf("Attempting to connect to SSID: %s.\r\n", ssid);
 
     // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
     WiFi.begin(ssid, pass);
@@ -48,7 +48,7 @@ void initWifi()
         WiFi.begin(ssid, pass);
         delay(10000);
     }
-    Serial.printf("Connected to wifi %s\r\n", ssid);
+    Serial.printf("Connected to wifi %s.\r\n", ssid);
 }
 
 void initTime()
@@ -67,7 +67,7 @@ void initTime()
         }
         else
         {
-            Serial.printf("Fetched NTP epoch time is: %lu\r\n", epochTime);
+            Serial.printf("Fetched NTP epoch time is: %lu.\r\n", epochTime);
             break;
         }
     }
@@ -95,7 +95,7 @@ void setup()
     iotHubClientHandle = IoTHubClient_LL_CreateFromConnectionString(connectionString, MQTT_Protocol);
     if (iotHubClientHandle == NULL)
     {
-        Serial.println("Failed on IoTHubClient_CreateFromConnectionString");
+        Serial.println("Failed on IoTHubClient_CreateFromConnectionString.");
         while (1);
     }
 
