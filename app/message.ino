@@ -81,7 +81,7 @@ void parseTwinMessage(char *message)
     JsonObject &root = jsonBuffer.parseObject(message);
     if (!root.success())
     {
-        Serial.printf("parse %s failed", message);
+        Serial.printf("Parse %s failed.\r\n", message);
         return;
     }
 
