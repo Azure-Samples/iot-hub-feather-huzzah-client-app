@@ -31,7 +31,7 @@ bool readFromSerial(char * prompt, char * buf, int maxLen, int timeout)
         int len = input.length();
         if(len > maxLen)
         {
-            Serial.printf("Your input should less than %d character(s), now you input %d characters\n", maxLen, len);
+            Serial.printf("Your input should less than %d character(s), now you input %d characters\r\n", maxLen, len);
         }
         else if (len > 0)
         {
