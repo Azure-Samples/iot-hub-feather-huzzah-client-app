@@ -1,7 +1,7 @@
 ---
 services: iot-hub
 platforms: arduino
-author: xshi
+author: shizn
 ---
 
 # IoT Hub Feather HUZZAH Client application 
