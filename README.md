@@ -1,7 +1,11 @@
 ---
-services: iot-hub
-platforms: arduino
-author: xshi
+page_type: sample
+languages:
+- cpp
+products:
+- azure
+- azure-iot-hub
+description: "Source code to help you get familiar with Azure IoT using the Azure IoT Adafruit Feather HUZZAH ESP8266 Starter Kit."
 ---
 
 # IoT Hub Feather HUZZAH Client application 
